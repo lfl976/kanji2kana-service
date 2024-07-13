@@ -27,21 +27,21 @@ def tokenize_to_json(text):
     return tokens
 
 
-application = Flask(__name__)
-CORS(application)
+app = Flask(__name__)
+CORS(app)
 
 
-@application.route('/')
+@app.route('/')
 def hello_world():  # put application's code here
-    return 'Hello World2!'
+    return 'Hello World!'
 
 
-@application.route('/katakana_to_hiragana/<text>')
+@app.route('/katakana_to_hiragana/<text>')
 def katakana_to_hiragana(text):
     return katakana_to_hiragana_convert(text)
 
 
-@application.route('/tokenize', methods=['GET'])
+@app.route('/tokenize', methods=['GET'])
 def tokenize():
     text = request.args.get('text')
     if not text:
@@ -56,5 +56,5 @@ def tokenize():
 
 
 if __name__ == '__main__':
-    application.debug = True
-    application.run()
+    app.debug = True
+    app.run()
