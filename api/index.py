@@ -18,7 +18,7 @@ def tokenize_to_json(text):
     nodes = tokenizer_obj.tokenize(text, mode)
     tokens = []
     for node in nodes:
-        print(node.surface(), node.reading_form(), node.part_of_speech())
+        # print(node.surface(), node.reading_form(), node.part_of_speech())
         token = {
             'surface': node.surface(),
             'kana': katakana_to_hiragana_convert(node.reading_form()),
@@ -29,6 +29,14 @@ def tokenize_to_json(text):
 
 app = Flask(__name__)
 CORS(app)
+
+
+def batch_tokenize_to_json(sentences):
+    results = []
+    for sentence in sentences:
+        tokens = tokenize_to_json(sentence)
+        results.append(tokens)
+    return results
 
 
 @app.route('/')
@@ -46,11 +54,24 @@ def tokenize():
     text = request.args.get('text')
     if not text:
         return jsonify({'error': 'Missing text parameter'}), 400
-    print(text)
+    # print(text)
     try:
         tokens = tokenize_to_json(text)
-        print(tokens)
+        # print(tokens)
         return jsonify(tokens)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/batch_tokenize', methods=['POST'])
+def batch_tokenize():
+    data = request.get_json()
+    if not data or 'sentences' not in data:
+        return jsonify({'error': 'Missing "sentences" parameter'}), 400
+
+    try:
+        results = batch_tokenize_to_json(data['sentences'])
+        return jsonify({'results': results})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
